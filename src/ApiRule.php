@@ -5,21 +5,27 @@ namespace BrayanCaro\LaravelApiRule;
 use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Validator;
 
 abstract class ApiRule implements DataAwareRule
 {
     protected Response $response;
+
     protected Validator $validatorResponse;
+
     protected array $data;
+
     protected array $rules;
+
     protected array $customAttributes;
+
     protected array $messages;
 
     protected static string $base_attribute = 'responses';
+
     protected string $attribute;
 
     public function __construct(array $options = [])
@@ -34,15 +40,16 @@ abstract class ApiRule implements DataAwareRule
         $this->customAttributes = data_get($options, 'customAttributes', []);
     }
 
-    protected abstract function pullResponse($value): Response;
+    abstract protected function pullResponse($value): Response;
 
     public function passes($attribute, $value): bool
     {
         $this->attribute = $attribute;
 
         $this->response = $this->pullResponse($value);
-        if ($this->response->failed())
+        if ($this->response->failed()) {
             return false;
+        }
 
         $response = $this->response->json();
         Arr::set($this->data, $this->getPrefix(), $response);
@@ -58,20 +65,21 @@ abstract class ApiRule implements DataAwareRule
 
     protected function getPrefix(): string
     {
-        return self::$base_attribute . ".$this->attribute";
+        return self::$base_attribute.".$this->attribute";
     }
 
     protected static function prefixKeyToRules(array $rules, string $prefix): array
     {
         return Collection::wrap($rules)->mapWithKeys(fn ($value, $key) => [
-            (Str::startsWith($key, $prefix) ? $key : "$prefix.$key") => $value
+            (Str::startsWith($key, $prefix) ? $key : "$prefix.$key") => $value,
         ])->toArray();
     }
 
     public function message()
     {
-        if ($this->response->failed())
+        if ($this->response->failed()) {
             return $this->response->json('error');
+        }
 
         return $this->validatorResponse->messages()->first();
     }
@@ -84,6 +92,7 @@ abstract class ApiRule implements DataAwareRule
     public function setData($data): self
     {
         $this->data = $data;
+
         return $this;
     }
 }
