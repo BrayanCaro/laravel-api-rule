@@ -2,9 +2,9 @@
 
 namespace BrayanCaro\LaravelApiRule;
 
+use BrayanCaro\LaravelApiRule\Commands\LaravelApiRuleCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use BrayanCaro\LaravelApiRule\Commands\LaravelApiRuleCommand;
 
 class LaravelApiRuleServiceProvider extends PackageServiceProvider
 {

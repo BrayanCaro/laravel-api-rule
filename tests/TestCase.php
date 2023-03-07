@@ -2,9 +2,9 @@
 
 namespace BrayanCaro\LaravelApiRule\Tests;
 
+use BrayanCaro\LaravelApiRule\LaravelApiRuleServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use BrayanCaro\LaravelApiRule\LaravelApiRuleServiceProvider;
 
 class TestCase extends Orchestra
 {
