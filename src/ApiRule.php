@@ -3,6 +3,7 @@
 namespace BrayanCaro\LaravelApiRule;
 
 use Illuminate\Contracts\Validation\DataAwareRule;
+use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Validator as FacadesValidator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Validator;
 
-abstract class ApiRule implements DataAwareRule
+abstract class ApiRule implements Rule, DataAwareRule
 {
     protected Response $response;
 
