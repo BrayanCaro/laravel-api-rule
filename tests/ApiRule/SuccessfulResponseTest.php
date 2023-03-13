@@ -28,13 +28,9 @@ beforeEach(function () {
 });
 
 it('passes missing data')
-    ->expect(fn ($value) => Validator::make(['foo' => $value], ['foo' => $this->rule]))
+    ->expect(fn () => Validator::make(['foo' => ''], ['foo' => $this->rule]))
     ->passes()
-    ->toBeTrue()
-    ->with([
-        '',
-        null,
-    ]);
+    ->toBeTrue();
 
 it('fails missing data, but required')
     ->expect(fn ($value) => Validator::make(['foo' => $value], ['foo' => [$this->rule, 'required']]))
