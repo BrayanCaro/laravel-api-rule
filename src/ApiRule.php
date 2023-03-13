@@ -6,10 +6,10 @@ use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Validator;
+
+use function BrayanCaro\LaravelApiRule\Utils\prependKeysWith;
 
 abstract class ApiRule implements Rule, DataAwareRule
 {
@@ -54,9 +54,9 @@ abstract class ApiRule implements Rule, DataAwareRule
 
         $response = $this->response->json();
         Arr::set($this->data, $this->getPrefix(), $response);
-        $rules = $this->prefixKeyToRules($this->rules, $this->getPrefix());
-        $messages = $this->prefixKeyToRules($this->messages, $this->getPrefix());
-        $customAttributes = $this->prefixKeyToRules($this->customAttributes, $this->getPrefix());
+        $rules = prependKeysWith($this->rules, $this->getPrefix());
+        $messages = prependKeysWith($this->messages, $this->getPrefix());
+        $customAttributes = prependKeysWith($this->customAttributes, $this->getPrefix());
 
         $this->validatorResponse = FacadesValidator::make($this->data, $rules, $messages, $customAttributes);
         $this->validatorResponse->fails();
@@ -67,13 +67,6 @@ abstract class ApiRule implements Rule, DataAwareRule
     protected function getPrefix(): string
     {
         return self::$base_attribute.".$this->attribute";
-    }
-
-    protected static function prefixKeyToRules(array $rules, string $prefix): array
-    {
-        return Collection::wrap($rules)->mapWithKeys(fn ($value, $key) => [
-            (Str::startsWith($key, $prefix) ? $key : "$prefix.$key") => $value,
-        ])->toArray();
     }
 
     public function message()
