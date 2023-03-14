@@ -29,16 +29,27 @@ abstract class ApiRule implements Rule, DataAwareRule
 
     protected string $attribute;
 
-    public function __construct(array $options = [])
+    public function make()
     {
-        $this->setUp($options);
+        return new $this;
     }
 
-    protected function setUp(array $options = [])
+    public function setRules(array $rules)
     {
-        $this->rules = data_get($options, 'rules', []);
-        $this->messages = data_get($options, 'messages', []);
-        $this->customAttributes = data_get($options, 'customAttributes', []);
+        $this->rules = prependKeysWith($rules, $this->getPrefix());
+        return $this;
+    }
+
+    public function setCustomAttributes(array $customAttributes)
+    {
+        $this->customAttributes = prependKeysWith($customAttributes, $this->getPrefix());
+        return $this;
+    }
+
+    public function setMessages(array $messages)
+    {
+        $this->messages = prependKeysWith($messages, $this->getPrefix());
+        return $this;
     }
 
     abstract protected function pullResponse($value): Response;
@@ -54,11 +65,7 @@ abstract class ApiRule implements Rule, DataAwareRule
 
         $response = $this->response->json();
         Arr::set($this->data, $this->getPrefix(), $response);
-        $rules = prependKeysWith($this->rules, $this->getPrefix());
-        $messages = prependKeysWith($this->messages, $this->getPrefix());
-        $customAttributes = prependKeysWith($this->customAttributes, $this->getPrefix());
-
-        $this->validatorResponse = FacadesValidator::make($this->data, $rules, $messages, $customAttributes);
+        $this->validatorResponse = FacadesValidator::make($this->data, $this->rules, $this->messages, $this->customAttributes);
         $this->validatorResponse->fails();
 
         return $this->validatorResponse->passes();
@@ -66,7 +73,7 @@ abstract class ApiRule implements Rule, DataAwareRule
 
     protected function getPrefix(): string
     {
-        return self::$base_attribute.".$this->attribute";
+        return self::$base_attribute . ".$this->attribute";
     }
 
     public function message()
