@@ -19,19 +19,27 @@ abstract class ApiRule implements Rule, DataAwareRule
 
     protected array $data;
 
-    protected array $rules;
+    protected array $rules = [];
 
-    protected array $customAttributes;
+    protected array $customAttributes = [];
 
-    protected array $messages;
+    protected array $messages = [];
 
     protected static string $base_attribute = 'responses';
 
     protected string $attribute;
 
+    abstract protected function pullResponse($value): Response;
+
     public function make()
     {
         return new $this;
+    }
+
+    public function setData($data)
+    {
+        $this->data = $data;
+        return $this;
     }
 
     public function setRules(array $rules)
@@ -52,37 +60,9 @@ abstract class ApiRule implements Rule, DataAwareRule
         return $this;
     }
 
-    abstract protected function pullResponse($value): Response;
-
-    public function passes($attribute, $value): bool
-    {
-        $this->attribute = $attribute;
-
-        $this->response = $this->pullResponse($value);
-        if ($this->response->failed()) {
-            return false;
-        }
-
-        $response = $this->response->json();
-        Arr::set($this->data, $this->getPrefix(), $response);
-        $this->validatorResponse = FacadesValidator::make($this->data, $this->rules, $this->messages, $this->customAttributes);
-        $this->validatorResponse->fails();
-
-        return $this->validatorResponse->passes();
-    }
-
     protected function getPrefix(): string
     {
         return self::$base_attribute . ".$this->attribute";
-    }
-
-    public function message()
-    {
-        if ($this->response->failed()) {
-            return $this->response->json('error');
-        }
-
-        return $this->validatorResponse->messages()->first();
     }
 
     public function getResponse(): Response
@@ -90,10 +70,45 @@ abstract class ApiRule implements Rule, DataAwareRule
         return $this->response;
     }
 
-    public function setData($data): self
+    protected function responseFailded(): bool
     {
-        $this->data = $data;
+        return $this->response->failed();
+    }
 
-        return $this;
+    protected function setResponseData()
+    {
+        $response = $this->response->json();
+        Arr::set($this->data, $this->getPrefix(), $response);
+    }
+
+    /**
+     * Gets the errors of the response when it is considered as a failed response.
+     */
+    protected function responseErrors()
+    {
+        return $this->response->json('errors');
+    }
+
+    public function message()
+    {
+        if ($this->responseFailded()) {
+            return $this->responseErrors();
+        }
+
+        return $this->validatorResponse->messages();
+    }
+
+    public function passes($attribute, $value): bool
+    {
+        $this->attribute = $attribute;
+        $this->response = $this->pullResponse($value);
+        if ($this->responseFailded()) {
+            return false;
+        }
+        $this->setResponseData();
+        $this->validatorResponse = FacadesValidator::make($this->data, $this->rules, $this->messages, $this->customAttributes);
+        $this->validatorResponse->fails();
+
+        return $this->validatorResponse->passes();
     }
 }
