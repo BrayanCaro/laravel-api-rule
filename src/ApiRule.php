@@ -44,19 +44,19 @@ abstract class ApiRule implements Rule, DataAwareRule
 
     public function setRules(array $rules)
     {
-        $this->rules = prependKeysWith($rules, $this->getPrefix());
+        $this->rules = $rules;
         return $this;
     }
 
     public function setCustomAttributes(array $customAttributes)
     {
-        $this->customAttributes = prependKeysWith($customAttributes, $this->getPrefix());
+        $this->customAttributes = $customAttributes;
         return $this;
     }
 
     public function setMessages(array $messages)
     {
-        $this->messages = prependKeysWith($messages, $this->getPrefix());
+        $this->messages = $messages;
         return $this;
     }
 
@@ -95,7 +95,7 @@ abstract class ApiRule implements Rule, DataAwareRule
             return $this->responseErrors();
         }
 
-        return $this->validatorResponse->messages();
+        return $this->validatorResponse->messages()->all();
     }
 
     public function passes($attribute, $value): bool
@@ -106,9 +106,13 @@ abstract class ApiRule implements Rule, DataAwareRule
             return false;
         }
         $this->setResponseData();
-        $this->validatorResponse = FacadesValidator::make($this->data, $this->rules, $this->messages, $this->customAttributes);
+        $this->validatorResponse = FacadesValidator::make(
+            $this->data, # the data is already prefixed in setResponseData()
+            prependKeysWith($this->rules, $this->getPrefix() . '.'),
+            prependKeysWith($this->messages, $this->getPrefix() . '.'),
+            prependKeysWith($this->customAttributes, $this->getPrefix() . '.'),
+        );
         $this->validatorResponse->fails();
-
         return $this->validatorResponse->passes();
     }
 }

@@ -1,7 +1,5 @@
 <?php
 
-use BrayanCaro\LaravelApiRule\ApiRule;
-use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
@@ -18,13 +16,7 @@ beforeEach(function () {
             ],
         ]),
     ]);
-    $this->rule = new class extends ApiRule
-    {
-        protected function pullResponse($value): Response
-        {
-            return Http::get('dummy.com');
-        }
-    };
+    $this->rule = dummyRule1();
 });
 
 it('passes missing data')
