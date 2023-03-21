@@ -31,9 +31,10 @@ abstract class ApiRule implements Rule, DataAwareRule
 
     abstract protected function pullResponse($value): Response;
 
-    public function make()
+    public static function make(): self
     {
-        return new $this;
+        $class = get_called_class();
+        return new $class;
     }
 
     public function setData($data)
