@@ -11,8 +11,15 @@ use Illuminate\Validation\Validator;
 
 use function BrayanCaro\LaravelApiRule\Utils\prependKeysWith;
 
+/**
+ * @phpstan-consistent-constructor
+ */
 abstract class ApiRule implements Rule, DataAwareRule
 {
+    public function __construct()
+    {
+    }
+
     protected Response $response;
 
     protected Validator $validatorResponse;
@@ -31,10 +38,9 @@ abstract class ApiRule implements Rule, DataAwareRule
 
     abstract protected function pullResponse($value): Response;
 
-    public static function make(): self
+    public static function make(): static
     {
-        $class = get_called_class();
-        return new $class;
+        return new static;
     }
 
     public function setData($data)
