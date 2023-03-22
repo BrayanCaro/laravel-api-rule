@@ -1,24 +1,23 @@
 <?php
 
-namespace BrayanCaro\LaravelApiRule\Traits;
+namespace BrayanCaro\ApiRule\Traits;
 
+use BrayanCaro\ApiRule\ApiRule;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Collection;
 
-trait ResponseAccess
+trait ReuseResponse
 {
     /**
-     * @template T of \BrayanCaro\LaravelApiRule\ApiRule
+     * @template T of ApiRule
      * @param class-string<T> $className
      * @return T
      */
     public function getRule(string $className)
     {
-        $rule = Collection::wrap($this->validator->getRules())
+        return Collection::wrap($this->validator->getRules())
             ->flatten()
             ->first(fn ($rule) => $rule instanceof $className);
-
-        return $rule;
     }
 
     public function getResponseFromRule(string $className): Response

@@ -1,6 +1,6 @@
 <?php
 
-use BrayanCaro\LaravelApiRule\ApiRule;
+use BrayanCaro\ApiRule\ApiRule;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;

@@ -1,6 +1,6 @@
 {
     "name": "brayancaro/laravel-api-rule",
-    "description": "Easy API calls within Laravel rules. ",
+    "description": "Easy API calls within Laravel rules.",
     "keywords": [
         "BrayanCaro",
         "laravel",
@@ -32,8 +32,7 @@
     },
     "autoload": {
         "psr-4": {
-            "BrayanCaro\\LaravelApiRule\\": "src",
-            "BrayanCaro\\LaravelApiRule\\Database\\Factories\\": "database/factories"
+            "BrayanCaro\\ApiRule\\": "src"
         },
         "files": [
             "src/Helpers/functions.php"
@@ -41,7 +40,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "BrayanCaro\\LaravelApiRule\\Tests\\": "tests"
+            "BrayanCaro\\ApiRule\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -55,13 +54,6 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "phpstan/extension-installer": true
-        }
-    },
-    "extra": {
-        "laravel": {
-            "aliases": {
-                "LaravelApiRule": "BrayanCaro\\LaravelApiRule\\Facades\\LaravelApiRule"
-            }
         }
     },
     "minimum-stability": "dev",

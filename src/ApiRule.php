@@ -1,6 +1,6 @@
 <?php
 
-namespace BrayanCaro\LaravelApiRule;
+namespace BrayanCaro\ApiRule;
 
 use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\Rule;
@@ -9,7 +9,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 use Illuminate\Validation\Validator;
 
-use function BrayanCaro\LaravelApiRule\Utils\prependKeysWith;
+use function BrayanCaro\ApiRule\Utils\prependKeysWith;
 
 /**
  * @phpstan-consistent-constructor
@@ -38,30 +38,30 @@ abstract class ApiRule implements Rule, DataAwareRule
 
     abstract protected function pullResponse($value): Response;
 
-    public static function make(): static
+    public static function make(): ApiRule
     {
         return new static;
     }
 
-    public function setData($data)
+    public function setData($data): ApiRule
     {
         $this->data = $data;
         return $this;
     }
 
-    public function setRules(array $rules)
+    public function setRules(array $rules): ApiRule
     {
         $this->rules = $rules;
         return $this;
     }
 
-    public function setCustomAttributes(array $customAttributes)
+    public function setCustomAttributes(array $customAttributes): ApiRule
     {
         $this->customAttributes = $customAttributes;
         return $this;
     }
 
-    public function setMessages(array $messages)
+    public function setMessages(array $messages): ApiRule
     {
         $this->messages = $messages;
         return $this;
@@ -77,7 +77,7 @@ abstract class ApiRule implements Rule, DataAwareRule
         return $this->response;
     }
 
-    protected function responseFailded(): bool
+    protected function responseFailed(): bool
     {
         return $this->response->failed();
     }
@@ -98,7 +98,7 @@ abstract class ApiRule implements Rule, DataAwareRule
 
     public function message()
     {
-        if ($this->responseFailded()) {
+        if ($this->responseFailed()) {
             return $this->responseErrors();
         }
 
@@ -109,7 +109,7 @@ abstract class ApiRule implements Rule, DataAwareRule
     {
         $this->attribute = $attribute;
         $this->response = $this->pullResponse($value);
-        if ($this->responseFailded()) {
+        if ($this->responseFailed()) {
             return false;
         }
         $this->setResponseData();

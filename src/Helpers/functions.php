@@ -1,6 +1,6 @@
 <?php
 
-namespace BrayanCaro\LaravelApiRule\Utils;
+namespace BrayanCaro\ApiRule\Utils;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;

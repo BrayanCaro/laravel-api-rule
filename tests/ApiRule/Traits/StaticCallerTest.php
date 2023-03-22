@@ -1,6 +1,6 @@
 <?php
 
-use BrayanCaro\LaravelApiRule\ApiRule;
+use BrayanCaro\ApiRule\ApiRule;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
@@ -14,4 +14,4 @@ class DummyRule extends ApiRule
 
 it('is instance of child class (using make)')
     ->expect(fn () => DummyRule::make())
-    ->toBeInstanceOf(DummyRule::class)->only();
+    ->toBeInstanceOf(DummyRule::class);

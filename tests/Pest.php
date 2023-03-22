@@ -1,7 +1,7 @@
 <?php
 
-use BrayanCaro\LaravelApiRule\ApiRule;
-use BrayanCaro\LaravelApiRule\Tests\TestCase;
+use BrayanCaro\ApiRule\ApiRule;
+use BrayanCaro\ApiRule\Tests\TestCase;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
