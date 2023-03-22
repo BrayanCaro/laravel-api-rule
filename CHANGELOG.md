@@ -2,6 +2,15 @@
 
 All notable changes to `laravel-api-rule` will be documented in this file.
 
+## v0.2.0 - 2023-03-22
+
+### What's Changed
+
+- feat: Add trait to reuse fetched responses and make static method by @BrayanCaro in https://github.com/BrayanCaro/laravel-api-rule/pull/5
+- chore: clean up code by @BrayanCaro in https://github.com/BrayanCaro/laravel-api-rule/pull/6
+
+**Full Changelog**: https://github.com/BrayanCaro/laravel-api-rule/compare/v0.1.1...v0.2.0
+
 ## v0.1.1 - 2023-03-15
 
 ### What's Changed
