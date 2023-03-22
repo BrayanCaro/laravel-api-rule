@@ -1,6 +1,6 @@
 <?php
 
-namespace BrayanCaro\LaravelApiRule\Tests;
+namespace BrayanCaro\ApiRule\Tests;
 
 use Orchestra\Testbench\TestCase as Orchestra;
 
