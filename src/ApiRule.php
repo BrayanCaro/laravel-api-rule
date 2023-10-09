@@ -2,13 +2,14 @@
 
 namespace BrayanCaro\ApiRule;
 
+use Closure;
 use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Validator;
 
 use function BrayanCaro\ApiRule\Utils\prependKeysWith;
 
@@ -17,6 +18,10 @@ use function BrayanCaro\ApiRule\Utils\prependKeysWith;
  */
 abstract class ApiRule implements DataAwareRule, Rule
 {
+    public function __construct()
+    {
+    }
+
     /**
      * @var Response
      */
@@ -63,6 +68,11 @@ abstract class ApiRule implements DataAwareRule, Rule
     protected $reportOnTimeout = true;
 
     /**
+     * @var null|Closure
+     */
+    protected $afterPull = null;
+
+    /**
      * @var bool
      */
     protected $throwExceptionOnTimeout = false;
@@ -104,7 +114,7 @@ abstract class ApiRule implements DataAwareRule, Rule
 
     protected function getPrefix(): string
     {
-        return self::$base_attribute.'.'.$this->attribute;
+        return self::$base_attribute . '.' . $this->attribute;
     }
 
     public function getResponse(): Response
@@ -136,7 +146,7 @@ abstract class ApiRule implements DataAwareRule, Rule
             return $this->responseErrors();
         }
 
-        return $this->validatorResponse->messages()->all();
+        return $this->validatorResponse->errors()->all();
     }
 
     public function passes($attribute, $value): bool
@@ -145,17 +155,19 @@ abstract class ApiRule implements DataAwareRule, Rule
 
         $this->response = $this->throwExceptionOnTimeout ? $this->pullResponse($value) : $this->safePullResponse($value);
 
+        $this->afterPullHook();
+
         if ($this->responseFailed()) {
             return false;
         }
 
-        return $this->setupValidator($this->getPrefix())->passes();
+        return !$this->setupValidator($this->getPrefix())->fails();
     }
 
     /**
-     * @param  string  $prefix The prefix for getting the response data using dot notation
+     * @param string $prefix The prefix for getting the response data using dot notation
      */
-    public function setupValidator(string $prefix): \Illuminate\Contracts\Validation\Validator
+    public function setupValidator(string $prefix): Validator
     {
         $this->setResponseData($prefix);
 
@@ -163,7 +175,7 @@ abstract class ApiRule implements DataAwareRule, Rule
     }
 
     /**
-     * @param  string  $prefix The prefix for getting the response data using dot notation
+     * @param string $prefix The prefix for getting the response data using dot notation
      */
     protected function setResponseData(string $prefix): void
     {
@@ -171,9 +183,9 @@ abstract class ApiRule implements DataAwareRule, Rule
     }
 
     /**
-     * @param  string  $prefix The prefix for getting the response data using dot notation
+     * @param string $prefix The prefix for getting the response data using dot notation
      */
-    public function getValidatorResponse(string $prefix): \Illuminate\Contracts\Validation\Validator
+    public function getValidatorResponse(string $prefix): Validator
     {
         $prefix = Str::finish($prefix, '.');
 
@@ -185,10 +197,6 @@ abstract class ApiRule implements DataAwareRule, Rule
         );
     }
 
-    /**
-     * @param $value
-     * @return Response
-     */
     public function safePullResponse($value): Response
     {
         return rescue(function () use ($value) {
@@ -214,5 +222,31 @@ abstract class ApiRule implements DataAwareRule, Rule
     public static function getDefaultTimeoutResponse(): Response
     {
         return new Response(new \GuzzleHttp\Psr7\Response(\Illuminate\Http\Response::HTTP_REQUEST_TIMEOUT));
+    }
+
+    public function afterPullHook(): void
+    {
+        $hook = $this->afterPull;
+        if ($hook instanceof Closure) {
+            $hook($this->response);
+        }
+    }
+
+    /**
+     * @param string|array $path
+     */
+    public function saveResponseOn(&$target, $path): ApiRule
+    {
+        $this->setAfterPull(function () use (&$target, $path) {
+            data_set($target, $path, $this->response);
+        });
+
+        return $this;
+    }
+
+    public function setAfterPull(?Closure $afterPull): ApiRule
+    {
+        $this->afterPull = $afterPull;
+        return $this;
     }
 }
