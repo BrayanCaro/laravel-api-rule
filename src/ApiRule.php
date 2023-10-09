@@ -17,10 +17,6 @@ use function BrayanCaro\ApiRule\Utils\prependKeysWith;
  */
 abstract class ApiRule implements DataAwareRule, Rule
 {
-    public function __construct()
-    {
-    }
-
     /**
      * @var Response
      */
