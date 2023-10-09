@@ -20,21 +20,45 @@ abstract class ApiRule implements Rule, DataAwareRule
     {
     }
 
-    protected Response $response;
+    /**
+     * @var Response
+     */
+    protected $response;
 
-    protected Validator $validatorResponse;
+    /**
+     * @var Validator
+     */
+    protected $validatorResponse;
 
-    protected array $data;
+    /**
+     * @var array
+     */
+    protected $data;
 
-    protected array $rules = [];
+    /**
+     * @var array
+     */
+    protected $rules = [];
 
-    protected array $customAttributes = [];
+    /**
+     * @var array
+     */
+    protected $customAttributes = [];
 
-    protected array $messages = [];
+    /**
+     * @var array
+     */
+    protected $messages = [];
 
-    protected static string $base_attribute = 'responses';
+    /**
+     * @var string
+     */
+    protected static $base_attribute = 'responses';
 
-    protected string $attribute;
+    /**
+     * @var string
+     */
+    protected $attribute;
 
     abstract protected function pullResponse($value): Response;
 
@@ -64,6 +88,7 @@ abstract class ApiRule implements Rule, DataAwareRule
     public function setMessages(array $messages): ApiRule
     {
         $this->messages = $messages;
+
         return $this;
     }
 

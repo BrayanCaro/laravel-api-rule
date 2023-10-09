@@ -12,12 +12,15 @@ use Illuminate\Support\Str;
  * but that function was introducted in laravel 9
  *
  * @template T
- * @param array<string, T> $array
+ *
+ * @param  array<string, T>  $array
  * @return array<string, T>
  */
 function prependKeysWith(array $array, string $prefix): array
 {
-    return Collection::wrap($array)->mapWithKeys(fn ($value, $key) => [
-        Str::start($key, $prefix) => $value,
-    ])->toArray();
+    return Collection::wrap($array)->mapWithKeys(function ($value, $key) use ($prefix) {
+        return [
+            Str::start($key, $prefix) => $value,
+        ];
+    })->toArray();
 }
