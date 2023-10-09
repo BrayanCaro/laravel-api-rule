@@ -10,14 +10,17 @@ trait ReuseResponse
 {
     /**
      * @template T of ApiRule
-     * @param class-string<T> $className
+     *
+     * @param  class-string<T>  $className
      * @return T
      */
     public function getRule(string $className)
     {
         return Collection::wrap($this->validator->getRules())
             ->flatten()
-            ->first(fn ($rule) => $rule instanceof $className);
+            ->first(function ($rule) use ($className) {
+                return $rule instanceof $className;
+            });
     }
 
     public function getResponseFromRule(string $className): Response

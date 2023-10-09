@@ -3,6 +3,7 @@ includes:
 
 parameters:
     level: 4
+    phpVersion: 70300 # PHP 7.3
     paths:
         - src
     tmpDir: build/phpstan
