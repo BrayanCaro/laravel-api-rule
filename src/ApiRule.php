@@ -5,11 +5,11 @@ namespace BrayanCaro\ApiRule;
 use Closure;
 use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Validator;
 
 use function BrayanCaro\ApiRule\Utils\prependKeysWith;
 
@@ -146,7 +146,7 @@ abstract class ApiRule implements DataAwareRule, Rule
             return $this->responseErrors();
         }
 
-        return $this->validatorResponse->messages()->all();
+        return $this->validatorResponse->errors()->all();
     }
 
     public function passes($attribute, $value): bool
@@ -161,13 +161,13 @@ abstract class ApiRule implements DataAwareRule, Rule
             return false;
         }
 
-        return $this->setupValidator($this->getPrefix())->passes();
+        return !$this->setupValidator($this->getPrefix())->fails();
     }
 
     /**
      * @param string $prefix The prefix for getting the response data using dot notation
      */
-    public function setupValidator(string $prefix): \Illuminate\Contracts\Validation\Validator
+    public function setupValidator(string $prefix): Validator
     {
         $this->setResponseData($prefix);
 
@@ -185,7 +185,7 @@ abstract class ApiRule implements DataAwareRule, Rule
     /**
      * @param string $prefix The prefix for getting the response data using dot notation
      */
-    public function getValidatorResponse(string $prefix): \Illuminate\Contracts\Validation\Validator
+    public function getValidatorResponse(string $prefix): Validator
     {
         $prefix = Str::finish($prefix, '.');
 
@@ -197,10 +197,6 @@ abstract class ApiRule implements DataAwareRule, Rule
         );
     }
 
-    /**
-     * @param $value
-     * @return Response
-     */
     public function safePullResponse($value): Response
     {
         return rescue(function () use ($value) {
