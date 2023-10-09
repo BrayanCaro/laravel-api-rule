@@ -2,6 +2,7 @@
 
 namespace BrayanCaro\ApiRule;
 
+use Closure;
 use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Http\Client\Response;
@@ -63,6 +64,11 @@ abstract class ApiRule implements DataAwareRule, Rule
     protected $reportOnTimeout = true;
 
     /**
+     * @var null|Closure
+     */
+    protected $afterPull = null;
+
+    /**
      * @var bool
      */
     protected $throwExceptionOnTimeout = false;
@@ -104,7 +110,7 @@ abstract class ApiRule implements DataAwareRule, Rule
 
     protected function getPrefix(): string
     {
-        return self::$base_attribute.'.'.$this->attribute;
+        return self::$base_attribute . '.' . $this->attribute;
     }
 
     public function getResponse(): Response
@@ -145,6 +151,8 @@ abstract class ApiRule implements DataAwareRule, Rule
 
         $this->response = $this->throwExceptionOnTimeout ? $this->pullResponse($value) : $this->safePullResponse($value);
 
+        $this->afterPullHook();
+
         if ($this->responseFailed()) {
             return false;
         }
@@ -153,7 +161,7 @@ abstract class ApiRule implements DataAwareRule, Rule
     }
 
     /**
-     * @param  string  $prefix The prefix for getting the response data using dot notation
+     * @param string $prefix The prefix for getting the response data using dot notation
      */
     public function setupValidator(string $prefix): \Illuminate\Contracts\Validation\Validator
     {
@@ -163,7 +171,7 @@ abstract class ApiRule implements DataAwareRule, Rule
     }
 
     /**
-     * @param  string  $prefix The prefix for getting the response data using dot notation
+     * @param string $prefix The prefix for getting the response data using dot notation
      */
     protected function setResponseData(string $prefix): void
     {
@@ -171,7 +179,7 @@ abstract class ApiRule implements DataAwareRule, Rule
     }
 
     /**
-     * @param  string  $prefix The prefix for getting the response data using dot notation
+     * @param string $prefix The prefix for getting the response data using dot notation
      */
     public function getValidatorResponse(string $prefix): \Illuminate\Contracts\Validation\Validator
     {
@@ -214,5 +222,31 @@ abstract class ApiRule implements DataAwareRule, Rule
     public static function getDefaultTimeoutResponse(): Response
     {
         return new Response(new \GuzzleHttp\Psr7\Response(\Illuminate\Http\Response::HTTP_REQUEST_TIMEOUT));
+    }
+
+    public function afterPullHook(): void
+    {
+        $hook = $this->afterPull;
+        if ($hook instanceof Closure) {
+            $hook($this->response);
+        }
+    }
+
+    /**
+     * @param string|array $path
+     */
+    public function saveResponseOn(&$target, $path): ApiRule
+    {
+        $this->setAfterPull(function () use (&$target, $path) {
+            data_set($target, $path, $this->response);
+        });
+
+        return $this;
+    }
+
+    public function setAfterPull(?Closure $afterPull): ApiRule
+    {
+        $this->afterPull = $afterPull;
+        return $this;
     }
 }
