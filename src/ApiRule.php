@@ -57,6 +57,16 @@ abstract class ApiRule implements DataAwareRule, Rule
      */
     protected $attribute;
 
+    /**
+     * @var bool
+     */
+    protected $reportOnTimeout = true;
+
+    /**
+     * @var bool
+     */
+    protected $throwExceptionOnTimeout = false;
+
     abstract protected function pullResponse($value): Response;
 
     public static function make(): ApiRule
@@ -132,7 +142,9 @@ abstract class ApiRule implements DataAwareRule, Rule
     public function passes($attribute, $value): bool
     {
         $this->attribute = $attribute;
-        $this->response = $this->pullResponse($value);
+
+        $this->response = $this->throwExceptionOnTimeout ? $this->pullResponse($value) : $this->safePullResponse($value);
+
         if ($this->responseFailed()) {
             return false;
         }
@@ -171,5 +183,36 @@ abstract class ApiRule implements DataAwareRule, Rule
             prependKeysWith($this->messages, $prefix),
             prependKeysWith($this->customAttributes, $prefix),
         );
+    }
+
+    /**
+     * @param $value
+     * @return Response
+     */
+    public function safePullResponse($value): Response
+    {
+        return rescue(function () use ($value) {
+            return $this->pullResponse($value);
+        }, self::getDefaultTimeoutResponse(), $this->reportOnTimeout);
+    }
+
+    public function setReportOnTimeout(bool $reportOnTimeout): ApiRule
+    {
+        $this->reportOnTimeout = $reportOnTimeout;
+        return $this;
+    }
+
+    public function setThrowExceptionOnTimeout(bool $throwExceptionOnTimeout): ApiRule
+    {
+        $this->throwExceptionOnTimeout = $throwExceptionOnTimeout;
+        return $this;
+    }
+
+    /**
+     * @return Response
+     */
+    public static function getDefaultTimeoutResponse(): Response
+    {
+        return new Response(new \GuzzleHttp\Psr7\Response(\Illuminate\Http\Response::HTTP_REQUEST_TIMEOUT));
     }
 }
