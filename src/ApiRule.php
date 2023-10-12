@@ -8,6 +8,7 @@ use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 use Illuminate\Support\Str;
 
@@ -128,6 +129,15 @@ abstract class ApiRule implements DataAwareRule, Rule
     }
 
     /**
+     * Default error message when the rule couldn't find a proper error message
+     * in the response, only needed if the error message is null, or is
+     * not well-formed (is not a string or a non-empty array of strings).
+     */
+    protected function defaultErrorMessage(): ?string {
+        return null;
+    }
+
+    /**
      * Gets the errors of the response when it is considered as a failed response.
      *
      * @return array|string|null
@@ -138,12 +148,29 @@ abstract class ApiRule implements DataAwareRule, Rule
     }
 
     /**
-     * @return array|string|null
+     * @return string[]|string|null
      */
-    public function message()
+    protected function safeResponseErrors()
+    {
+        $errors = Collection::wrap($this->responseErrors())
+            ->filter(function ($item) {
+                return is_string($item);
+            });
+
+        if ($errors->isNotEmpty()) {
+            return $errors->toArray();
+        }
+
+        return $this->defaultErrorMessage();
+    }
+
+    /**
+     * @return string[]|string|null
+     */
+    public function message(): array
     {
         if ($this->responseFailed()) {
-            return $this->responseErrors();
+            return $this->safeResponseErrors();
         }
 
         return $this->validatorResponse->errors()->all();
