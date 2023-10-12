@@ -167,7 +167,7 @@ abstract class ApiRule implements DataAwareRule, Rule
     /**
      * @return string[]|string|null
      */
-    public function message(): array
+    public function message()
     {
         if ($this->responseFailed()) {
             return $this->safeResponseErrors();
