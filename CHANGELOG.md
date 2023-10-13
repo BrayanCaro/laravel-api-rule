@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-api-rule` will be documented in this file.
 
+## v1.0.2 - 2023-10-13
+
+### What's Changed
+
+- chore(phpstan): Add static type hint for return child instances. by @BrayanCaro in https://github.com/BrayanCaro/laravel-api-rule/pull/19
+
+**Full Changelog**: https://github.com/BrayanCaro/laravel-api-rule/compare/v1.0.1...v1.0.2
+
 ## v1.0.1 - 2023-10-12
 
 ### What's Changed
