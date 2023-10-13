@@ -80,6 +80,9 @@ abstract class ApiRule implements DataAwareRule, Rule
 
     abstract protected function pullResponse($value): Response;
 
+    /**
+     * @return static
+     */
     public static function make(): ApiRule
     {
         return new static;
@@ -92,6 +95,9 @@ abstract class ApiRule implements DataAwareRule, Rule
         return $this;
     }
 
+    /**
+     * @return static
+     */
     public function setRules(array $rules): ApiRule
     {
         $this->rules = $rules;
@@ -99,6 +105,9 @@ abstract class ApiRule implements DataAwareRule, Rule
         return $this;
     }
 
+    /**
+     * @return static
+     */
     public function setCustomAttributes(array $customAttributes): ApiRule
     {
         $this->customAttributes = $customAttributes;
@@ -106,6 +115,9 @@ abstract class ApiRule implements DataAwareRule, Rule
         return $this;
     }
 
+    /**
+     * @return static
+     */
     public function setMessages(array $messages): ApiRule
     {
         $this->messages = $messages;
@@ -231,12 +243,18 @@ abstract class ApiRule implements DataAwareRule, Rule
         }, self::getDefaultTimeoutResponse(), $this->reportOnTimeout);
     }
 
+    /**
+     * @return static
+     */
     public function setReportOnTimeout(bool $reportOnTimeout): ApiRule
     {
         $this->reportOnTimeout = $reportOnTimeout;
         return $this;
     }
 
+    /**
+     * @return static
+     */
     public function setThrowExceptionOnTimeout(bool $throwExceptionOnTimeout): ApiRule
     {
         $this->throwExceptionOnTimeout = $throwExceptionOnTimeout;
@@ -261,6 +279,7 @@ abstract class ApiRule implements DataAwareRule, Rule
 
     /**
      * @param string|array $path
+     * @return static
      */
     public function saveResponseOn(&$target, $path): ApiRule
     {
@@ -271,6 +290,9 @@ abstract class ApiRule implements DataAwareRule, Rule
         return $this;
     }
 
+    /**
+     * @return static
+     */
     public function setAfterPull(?Closure $afterPull): ApiRule
     {
         $this->afterPull = $afterPull;
