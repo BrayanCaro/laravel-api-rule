@@ -2,6 +2,7 @@
 
 namespace BrayanCaro\ApiRule;
 
+use BrayanCaro\ApiRule\Traits\HasReplacers;
 use Closure;
 use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\Rule;
@@ -19,6 +20,8 @@ use function BrayanCaro\ApiRule\Utils\prependKeysWith;
  */
 abstract class ApiRule implements DataAwareRule, Rule
 {
+    use HasReplacers;
+
     public function __construct()
     {
     }
@@ -228,12 +231,15 @@ abstract class ApiRule implements DataAwareRule, Rule
     {
         $prefix = Str::finish($prefix, '.');
 
-        return FacadesValidator::make(
+        /** @var \Illuminate\Validation\Validator $validator */
+        $validator = FacadesValidator::make(
             $this->data, // the data is already prefixed in setResponseData()
             prependKeysWith($this->rules, $prefix),
             prependKeysWith($this->messages, $prefix),
             prependKeysWith($this->customAttributes, $prefix),
         );
+        $validator->addReplacers($this->replacers);
+        return $validator;
     }
 
     public function safePullResponse($value): Response
