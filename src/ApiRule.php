@@ -42,17 +42,17 @@ abstract class ApiRule implements DataAwareRule, Rule
     protected $data;
 
     /**
-     * @var array
+     * @var array|Closure(Response $response): array
      */
     protected $rules = [];
 
     /**
-     * @var array
+     * @var array|Closure(Response $response): array
      */
     protected $customAttributes = [];
 
     /**
-     * @var array
+     * @var array|Closure(Response $response): array
      */
     protected $messages = [];
 
@@ -234,9 +234,9 @@ abstract class ApiRule implements DataAwareRule, Rule
         /** @var \Illuminate\Validation\Validator $validator */
         $validator = FacadesValidator::make(
             $this->data, // the data is already prefixed in setResponseData()
-            prependKeysWith($this->rules, $prefix),
-            prependKeysWith($this->messages, $prefix),
-            prependKeysWith($this->customAttributes, $prefix),
+            prependKeysWith($this->getRules(), $prefix),
+            prependKeysWith($this->getMessages(), $prefix),
+            prependKeysWith($this->getCustomAttributes(), $prefix),
         );
         $validator->addReplacers($this->replacers);
         return $validator;
@@ -303,5 +303,20 @@ abstract class ApiRule implements DataAwareRule, Rule
     {
         $this->afterPull = $afterPull;
         return $this;
+    }
+
+    public function getRules(): array
+    {
+        return value($this->rules, $this->response);
+    }
+
+    public function getCustomAttributes(): array
+    {
+        return value($this->customAttributes, $this->response);
+    }
+
+    public function getMessages(): array
+    {
+        return value($this->messages, $this->response);
     }
 }
