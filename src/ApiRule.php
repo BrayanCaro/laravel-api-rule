@@ -3,6 +3,7 @@
 namespace BrayanCaro\ApiRule;
 
 use BrayanCaro\ApiRule\Traits\HasReplacers;
+use BrayanCaro\ApiRule\Traits\CanStopOnFirstFailure;
 use Closure;
 use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\Rule;
@@ -21,6 +22,7 @@ use function BrayanCaro\ApiRule\Utils\prependKeysWith;
 abstract class ApiRule implements DataAwareRule, Rule
 {
     use HasReplacers;
+    use CanStopOnFirstFailure;
 
     public function __construct()
     {
