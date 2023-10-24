@@ -99,9 +99,10 @@ abstract class ApiRule implements DataAwareRule, Rule
     }
 
     /**
+     * @param array|Closure(Response $response): array $rules
      * @return static
      */
-    public function setRules(array $rules): ApiRule
+    public function setRules($rules): ApiRule
     {
         $this->rules = $rules;
 
@@ -109,9 +110,10 @@ abstract class ApiRule implements DataAwareRule, Rule
     }
 
     /**
+     * @param array|Closure(Response $response): array $customAttributes
      * @return static
      */
-    public function setCustomAttributes(array $customAttributes): ApiRule
+    public function setCustomAttributes($customAttributes): ApiRule
     {
         $this->customAttributes = $customAttributes;
 
@@ -119,9 +121,10 @@ abstract class ApiRule implements DataAwareRule, Rule
     }
 
     /**
+     * @param array|Closure(Response $response): array $messages
      * @return static
      */
-    public function setMessages(array $messages): ApiRule
+    public function setMessages($messages): ApiRule
     {
         $this->messages = $messages;
 
@@ -239,6 +242,7 @@ abstract class ApiRule implements DataAwareRule, Rule
             prependKeysWith($this->getCustomAttributes(), $prefix),
         );
         $validator->addReplacers($this->replacers);
+        $validator->stopOnFirstFailure($this->getStopOnFirstFailure());
         return $validator;
     }
 
