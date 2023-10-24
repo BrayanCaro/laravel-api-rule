@@ -2,6 +2,15 @@
 
 All notable changes to `laravel-api-rule` will be documented in this file.
 
+## v1.1.0 - 2023-10-24
+
+### What's Changed
+
+- feat(validator): Add replacers support by @BrayanCaro in https://github.com/BrayanCaro/laravel-api-rule/pull/20
+- feat(api): Add closure and stopOnFirstFailure support by @BrayanCaro in https://github.com/BrayanCaro/laravel-api-rule/pull/21
+
+**Full Changelog**: https://github.com/BrayanCaro/laravel-api-rule/compare/v1.0.2...v1.1.0
+
 ## v1.0.2 - 2023-10-13
 
 ### What's Changed
