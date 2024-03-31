@@ -2,6 +2,18 @@
 
 All notable changes to `laravel-api-rule` will be documented in this file.
 
+## v2.0.0 - 2024-03-31
+
+### What's Changed
+
+* test: Add orchesta support for testing by @BrayanCaro in https://github.com/BrayanCaro/laravel-api-rule/pull/22
+* chore(deps): bump actions/checkout from 3 to 4 by @dependabot in https://github.com/BrayanCaro/laravel-api-rule/pull/11
+* chore(deps): bump stefanzweifel/git-auto-commit-action from 4 to 5 by @dependabot in https://github.com/BrayanCaro/laravel-api-rule/pull/15
+* feat(deps): Drop support for L8 and php 7 by @BrayanCaro in https://github.com/BrayanCaro/laravel-api-rule/pull/25
+* feat(deps): Add support for laravel 11 by @BrayanCaro in https://github.com/BrayanCaro/laravel-api-rule/pull/24
+
+**Full Changelog**: https://github.com/BrayanCaro/laravel-api-rule/compare/v1.1.0...v2.0.0
+
 ## v1.1.0 - 2023-10-24
 
 ### What's Changed
